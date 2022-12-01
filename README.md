@@ -38,4 +38,6 @@ Built with Go 1.7.3.
 git pull https://github.com/dustinblackman/mono-signtool.git
 cd mono-signtool
 make
+
+./docker-make.sh dist
 ```

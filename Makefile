@@ -4,10 +4,11 @@ LINTER_TAG := v1.0.3
 
 build:
 	# gox -osarch="windows/386" -output="signtool"
-	GOOS=windows GOARCH=386 go build -o signtool.exe main.go
+	GOOS=windows GOARCH=386 go build -o out/signtool.exe main.go
 
 dist: build
-	tar -zcvf "mono-signtool.tar.gz" --directory="." "./signtool.exe"
+	cd out && tar -zcvf "mono-signtool.tar.gz" --directory="." "./signtool.exe"
+	cd out && cp signtool.exe mono-signtool.exe
 
 # Setups linter configuration for tests
 setup-linter:

@@ -43,7 +43,7 @@ func main() {
 			"-out",
 			filePath + ".signed",
 			"-t",
-			"http://timestamp.verisign.com/scripts/timstamp.dll",
+			"http://timestamp.digicert.com",
 			"-pkcs12",
 			keyPath,
 			"-pass",
