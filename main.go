@@ -74,11 +74,7 @@ func main() {
 
 		// check result
 		if _, err := os.Stat(filePath + ".signed"); err != nil {
-			if idx == 1 {
-				log.Println("Signing", hash, "success")
-			} else {
-				log.Println("Signing", hash, "fail")
-			}
+			log.Println("Signing", hash, "fail")
 		} else {
 			log.Println("Signing", hash, "success")
 			if err := os.Remove(filePath); err != nil {
