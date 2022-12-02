@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 	"time"
 )
 
@@ -25,11 +24,9 @@ func main() {
 	if keyPath == "" {
 		log.Fatal("keyPath not set")
 	}
-
 	if password == "" {
 		log.Fatal("password not set")
 	}
-
 	if filePath == "" {
 		log.Fatal("exe file path not set")
 	}
@@ -51,45 +48,35 @@ func main() {
 			password}
 
 		if idx == 1 {
-			args = append(args, "-nest") // add instead of replace
+			args = append(args, "-nest")
 		}
 		args = append(args, "-h", hash)
 
 		cmd := exec.Command("cmd", args...)
-
-		// call command
-		log.Println("osslsigncode", strings.Join(args, " "))
-		if err := cmd.Run(); err != nil {
-			log.Fatal(err)
-		}
-
-		// wait for result, max time = 5s
-		i := 0
-		for i < 10 {
+		cmd.Start()
+		for {
 			if _, err := os.Stat(filePath + ".signed"); err == nil {
 				break
 			}
+
 			time.Sleep(500 * time.Millisecond)
-		}
 
-		// check result
-		if _, err := os.Stat(filePath + ".signed"); err != nil {
-			if idx == 1 {
-				log.Println("Signing", hash, "success")
-			} else {
-				log.Println("Signing", hash, "fail")
-			}
-		} else {
-			log.Println("Signing", hash, "success")
-			if err := os.Remove(filePath); err != nil {
-				log.Fatal(err)
-			}
-
-			if err := os.Rename(filePath+".signed", filePath); err != nil {
-				log.Fatal(err)
+			if cmd.Err != nil || cmd.ProcessState.Exited() || cmd.ProcessState.Success() {
+				break
 			}
 		}
 
-		time.Sleep(500 * time.Millisecond)
+		err := cmd.Process.Kill()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = os.Remove(filePath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = os.Rename(filePath+".signed", filePath)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
